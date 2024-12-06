@@ -177,8 +177,8 @@ int main()
     }
     else
         std::cout << std::endl<< "It is not valid!" << std::endl;
-
-    NondeterministicFiniteAutomaton automat2=automat2.returnAFNfromPolishForm(regex);
+    std::vector<char> polishForm = regexToPolishForm(regex);
+    NondeterministicFiniteAutomaton automat2=automat2.returnAFNfromPolishForm(polishForm);
     automat2.PrintAutomation();
 	return 0;
 }

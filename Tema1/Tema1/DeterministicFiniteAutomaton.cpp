@@ -17,12 +17,12 @@ DeterministicFiniteAutomaton::DeterministicFiniteAutomaton()
 	m_final_states.insert(5);
 }
 
-void DeterministicFiniteAutomaton::setStates(std::unordered_set<int> states)
+void DeterministicFiniteAutomaton::setStates(std::set<int> states)
 {
 	m_states = states;
 }
 
-void DeterministicFiniteAutomaton::setAlphabet(std::unordered_set<char> alphabet)
+void DeterministicFiniteAutomaton::setAlphabet(std::set<char> alphabet)
 {
 	m_alphabet = alphabet;
 }
@@ -37,17 +37,17 @@ void DeterministicFiniteAutomaton::setInitialState(int init_state)
 	m_init_state = init_state;
 }
 
-void DeterministicFiniteAutomaton::setFinalStates(std::unordered_set<int> final_states)
+void DeterministicFiniteAutomaton::setFinalStates(std::set<int> final_states)
 {
 	m_final_states = final_states;
 }
 
-std::unordered_set<int>& DeterministicFiniteAutomaton::getStates()
+std::set<int>& DeterministicFiniteAutomaton::getStates()
 {
 	return m_states;
 }
 
-std::unordered_set<char>& DeterministicFiniteAutomaton::getAlphabet()
+std::set<char>& DeterministicFiniteAutomaton::getAlphabet()
 {
 	return m_alphabet;
 }
@@ -62,7 +62,7 @@ int& DeterministicFiniteAutomaton::getInitState()
 	return m_init_state;
 }
 
-std::unordered_set<int>& DeterministicFiniteAutomaton::getFinalStates()
+std::set<int>& DeterministicFiniteAutomaton::getFinalStates()
 {
 	return m_final_states;
 }

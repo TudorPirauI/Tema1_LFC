@@ -1,8 +1,10 @@
 ﻿#pragma once
 
-#include<unordered_set>
+#include<set>
+#include<set>
 #include<tuple>
 #include<unordered_map>
+#include<map>
 #include<string>
 #include<stack>
 #include<iostream>
@@ -21,33 +23,33 @@ private:
 	};
 
 public:
-	NondeterministicFiniteAutomaton()=default;
+	NondeterministicFiniteAutomaton() = default;
 	~NondeterministicFiniteAutomaton() = default;
-	std::unordered_set<int>& getStates();
-	std::unordered_set<char>& getAlphabet();
+	std::set<int>& getStates();
+	std::set<char>& getAlphabet();
 	std::unordered_map<std::pair<int, char>, std::vector<int>, PairHash>& getTransitions();
 	int getFinalState();
 	int getInitState() const;
 
-	void setStates(std::unordered_set<int> states);
-	void setAlphabet(std::unordered_set<char> alphabet);
+	void setStates(std::set<int> states);
+	void setAlphabet(std::set<char> alphabet);
 	void setTransitions(std::unordered_map<std::pair<int, char>, std::vector<int>, PairHash> transitions);
 	void setFinalState(int finalState);
 	void setInitState(int initState);
 
 	void addTransition(int initalState, char symbol, int finalState);
 	void copyTransitions(const nfa& a);
-	nfa returnAFNfromPolishForm(std::string polishForm);
+	nfa returnAFNfromPolishForm(std::vector<char> polishForm);
 	void PrintAutomation();
 
-	nfa Concatenate(nfa a, nfa b);
-	nfa Alternate(nfa a, nfa b);
+	nfa Concatenate(nfa b, nfa a);
+	nfa Alternate(nfa b, nfa a);
 	nfa KleeneStar(nfa a);
 
 	static int m_stateCounter;
 private:
-	std::unordered_set<int> m_states; //Q
-	std::unordered_set<char> m_alphabet; //Σ
+	std::set<int> m_states; //Q
+	std::set<char> m_alphabet; //Σ
 	std::unordered_map<std::pair<int, char>, std::vector<int>, PairHash> m_transitions; //δ
 	int m_init_state; //q_0
 	int m_final_state; //F

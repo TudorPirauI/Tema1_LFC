@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include<unordered_set>
+#include<set>
 #include<tuple>
 #include<unordered_map>
 #include<string>
@@ -19,26 +19,26 @@ private:
 		}
 	};
 
-	std::unordered_set<int> m_states; //Q
-	std::unordered_set<char> m_alphabet; //Σ
+	std::set<int> m_states; //Q
+	std::set<char> m_alphabet; //Σ
 	std::unordered_map<std::pair<int, char>, int,PairHash> m_transitions; //δ
 	int m_init_state; //q_0
-	std::unordered_set<int> m_final_states; //F
+	std::set<int> m_final_states; //F
 
 public:
 	DeterministicFiniteAutomaton();
 
-	void setStates(std::unordered_set<int> states);
-	void setAlphabet(std::unordered_set<char> alphabet);
+	void setStates(std::set<int> states);
+	void setAlphabet(std::set<char> alphabet);
 	void setTransitions(std::unordered_map<std::pair<int, char>, int, PairHash> transitions);
 	void setInitialState(int init_state);
-	void setFinalStates(std::unordered_set<int> final_states);
+	void setFinalStates(std::set<int> final_states);
 
-	std::unordered_set<int>& getStates();
-	std::unordered_set<char>& getAlphabet();
+	std::set<int>& getStates();
+	std::set<char>& getAlphabet();
 	std::unordered_map<std::pair<int, char>, int, PairHash>& getTransitions();
 	int& getInitState();
-	std::unordered_set<int>& getFinalStates();
+	std::set<int>& getFinalStates();
 
 	bool VerifyAutomation();
 	void PrintAutomation();

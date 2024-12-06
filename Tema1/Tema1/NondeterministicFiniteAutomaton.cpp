@@ -4,12 +4,12 @@ typedef NondeterministicFiniteAutomaton nfa;
 
 int NondeterministicFiniteAutomaton::m_stateCounter = 0;
 
-std::unordered_set<int>& NondeterministicFiniteAutomaton::getStates()
+std::set<int>& NondeterministicFiniteAutomaton::getStates()
 {
     return m_states;
 }
 
-std::unordered_set<char>& NondeterministicFiniteAutomaton::getAlphabet()
+std::set<char>& NondeterministicFiniteAutomaton::getAlphabet()
 {
     return m_alphabet;
 }
@@ -29,12 +29,12 @@ int NondeterministicFiniteAutomaton::getInitState() const
     return m_init_state;
 }
 
-void NondeterministicFiniteAutomaton::setStates(std::unordered_set<int> states)
+void NondeterministicFiniteAutomaton::setStates(std::set<int> states)
 {
     m_states = states;
 }
 
-void NondeterministicFiniteAutomaton::setAlphabet(std::unordered_set<char> alphabet)
+void NondeterministicFiniteAutomaton::setAlphabet(std::set<char> alphabet)
 {
     m_alphabet = alphabet;
 }
@@ -83,7 +83,7 @@ void NondeterministicFiniteAutomaton::copyTransitions(const nfa& a)
     }
 }
 
-nfa NondeterministicFiniteAutomaton::returnAFNfromPolishForm(std::string polishForm)
+nfa NondeterministicFiniteAutomaton::returnAFNfromPolishForm(std::vector<char> polishForm)
 {
     std::stack<nfa> automatonStack;
     for (auto i = 0; i < polishForm.size(); i++)
@@ -120,6 +120,7 @@ nfa NondeterministicFiniteAutomaton::returnAFNfromPolishForm(std::string polishF
         }
         automatonStack.push(result);
     }
+
     return automatonStack.top();
 }
 
@@ -127,19 +128,18 @@ void NondeterministicFiniteAutomaton::PrintAutomation()
 {
     std::cout << "\nStates:\n";
     for (int state : m_states)
-        std::cout << state << std::endl;
+        std::cout << state <<", ";
 
-    std::cout << "\nAlphabet:\n";
+    std::cout <<std::endl<< "\nAlphabet:\n";
     for (char symbol : m_alphabet)
-        std::cout << symbol << std::endl;
+        std::cout<< symbol << std::endl;
 
     std::cout << "\nTransitions:\n";
     for (const auto& transition : m_transitions)
     {
-        std::cout << transition.first.first << " --" << transition.first.second << "--> ";
         for (int destination : transition.second)
         {
-            std::cout << destination << " ";
+            std::cout << transition.first.first << " --" << transition.first.second << "--> " << destination << " ";
         }
         std::cout << std::endl;
     }
@@ -150,13 +150,12 @@ void NondeterministicFiniteAutomaton::PrintAutomation()
         std::cout << m_final_state << std::endl;
 }
 
-nfa NondeterministicFiniteAutomaton::Concatenate(nfa a, nfa b)
+nfa NondeterministicFiniteAutomaton::Concatenate(nfa b, nfa a)
 {
     nfa result;
     result.m_init_state = a.m_init_state;
     result.m_final_state = b.m_final_state;
-    result.m_alphabet = a.m_alphabet;
-    result.m_states = a.m_states;
+    result.copyTransitions(a);
     int mergeState = a.m_final_state;
     for (const auto& transition : b.m_transitions)
     {
@@ -177,11 +176,11 @@ nfa NondeterministicFiniteAutomaton::Concatenate(nfa a, nfa b)
             }
         }
     }
-
+    
     return result;
 }
 
-nfa NondeterministicFiniteAutomaton::Alternate(nfa a, nfa b)
+nfa NondeterministicFiniteAutomaton::Alternate(nfa b, nfa a)
 {
     nfa result;
     result.m_init_state = m_stateCounter;
