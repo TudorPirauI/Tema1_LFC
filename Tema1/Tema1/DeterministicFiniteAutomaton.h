@@ -6,6 +6,10 @@
 #include<string>
 #include<iostream>
 
+#include "NondeterministicFiniteAutomaton.h"
+
+typedef NondeterministicFiniteAutomaton nfa;
+
 class DeterministicFiniteAutomaton
 {
 
@@ -40,6 +44,7 @@ public:
 	int& getInitState();
 	std::set<int>& getFinalStates();
 
+	DeterministicFiniteAutomaton AFNtoAFD(nfa regex);
 	bool VerifyAutomation();
 	void PrintAutomation();
 	bool CheckWord(std::string word);

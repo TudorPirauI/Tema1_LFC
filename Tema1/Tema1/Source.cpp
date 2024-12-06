@@ -154,15 +154,6 @@ std::vector<char> regexToPolishForm(std::string pattern)
     return polish;
 }
 
-DeterministicFiniteAutomaton AFNtoAFD(const std::string& regex)
-{
-    DeterministicFiniteAutomaton AFD;
-    std::string regexCpy = regex;
-    std::vector<char> polishForm = regexToPolishForm(regex);
-
-    return AFD;
-}
-
 int main()
 {
     std::string regex;

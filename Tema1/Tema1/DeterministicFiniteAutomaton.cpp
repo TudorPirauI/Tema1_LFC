@@ -67,6 +67,20 @@ std::set<int>& DeterministicFiniteAutomaton::getFinalStates()
 	return m_final_states;
 }
 
+ ///getDestinantions -> returneaza un set de int-uri care contine starile in care poti sa ajungi din  starea Q cu simbolul trimis
+ ///in functia asta trebuie sa folosesc lambdaClosure, functie care merge din starea Q trimisa cu lambda unde poate
+ ///la final returneaza set-ul;
+ //--------------------------------------------------------------------------------
+ /// in fiecare set trebuie sa verific daca gasesc o stare finala din AFN
+ /// daca gasesc stare finala, bag starea mapata setului o bag in m_final_states
+
+DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa regex)
+{
+	DeterministicFiniteAutomaton result;
+
+	return result;
+}
+
 bool DeterministicFiniteAutomaton::VerifyAutomation()
 {
 	if (m_states.size() == 0)
