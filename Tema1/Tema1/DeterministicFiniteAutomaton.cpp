@@ -67,16 +67,109 @@ std::set<int>& DeterministicFiniteAutomaton::getFinalStates()
 	return m_final_states;
 }
 
- ///getDestinantions -> returneaza un set de int-uri care contine starile in care poti sa ajungi din  starea Q cu simbolul trimis
- ///in functia asta trebuie sa folosesc lambdaClosure, functie care merge din starea Q trimisa cu lambda unde poate
- ///la final returneaza set-ul;
- //--------------------------------------------------------------------------------
- /// in fiecare set trebuie sa verific daca gasesc o stare finala din AFN
- /// daca gasesc stare finala, bag starea mapata setului o bag in m_final_states
+struct SetHash {
+	template <typename T>
+	std::size_t operator()(const std::set<T>& s) const {
+		std::size_t hash_value = 0;
+		for (const T& elem : s) {
+			hash_value ^= std::hash<T>()(elem) + 0x9e3779b9 + (hash_value << 6) + (hash_value >> 2);
+		}
+		return hash_value;
+	}
+};
 
 DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa regex)
 {
 	DeterministicFiniteAutomaton result;
+
+	std::set<int> dfa_states;
+	std::unordered_map<std::pair<int, char>, int, PairHash> dfa_transitions;
+	std::set<int> dfa_final_states;
+	std::set<char> alphabet = regex.getAlphabet();
+
+	alphabet.erase('L');
+
+	auto lambda_closure = [&](const std::set<int>& states) {
+		std::set<int> closure = states;
+		std::queue<int> state_queue;
+		for (int state : states) {
+			state_queue.push(state);
+		}
+
+		while (!state_queue.empty()) {
+			int current_state = state_queue.front();
+			state_queue.pop();
+			auto transitions = regex.getTransitions();
+			auto it = transitions.find({ current_state, 'L' });
+			if (it != transitions.end()) {
+				for (int next_state : it->second) {
+					if (closure.find(next_state) == closure.end()) {
+						closure.insert(next_state);
+						state_queue.push(next_state);
+					}
+				}
+			}
+		}
+
+		return closure;
+		};
+
+	std::queue<std::set<int>> state_queue;
+	std::unordered_map<std::set<int>, int, SetHash> state_mapping;
+	int state_counter = 0;
+
+	std::set<int> nfa_init_state = { regex.getInitState() };
+	std::set<int> dfa_init_state = lambda_closure(nfa_init_state);
+
+	state_mapping[dfa_init_state] = state_counter++;
+	state_queue.push(dfa_init_state);
+	dfa_states.insert(state_mapping[dfa_init_state]);
+	result.setInitialState(state_mapping[dfa_init_state]);
+
+	while (!state_queue.empty()) {
+		std::set<int> current_set = state_queue.front();
+		state_queue.pop();
+		int current_dfa_state = state_mapping[current_set];
+
+		for (char symbol : alphabet) {
+			std::set<int> next_states;
+
+			for (int state : current_set) {
+				auto transitions = regex.getTransitions();
+				auto it = transitions.find({ state, symbol });
+				if (it != transitions.end()) {
+					for (int next_state : it->second) {
+						next_states.insert(next_state);
+					}
+				}
+			}
+
+			std::set<int> next_closure = lambda_closure(next_states);
+
+			if (!next_closure.empty()) {
+				if (state_mapping.find(next_closure) == state_mapping.end()) {
+					state_mapping[next_closure] = state_counter++;
+					state_queue.push(next_closure);
+					dfa_states.insert(state_mapping[next_closure]);
+				}
+				dfa_transitions[{current_dfa_state, symbol}] = state_mapping[next_closure];
+			}
+		}
+	}
+
+	for (const auto& [nfa_set, dfa_state] : state_mapping) {
+		for (int nfa_state : nfa_set) {
+			if (nfa_state == regex.getFinalState()) {
+				dfa_final_states.insert(dfa_state);
+				break;
+			}
+		}
+	}
+
+	result.setStates(dfa_states);
+	result.setAlphabet(alphabet);
+	result.setTransitions(dfa_transitions);
+	result.setFinalStates(dfa_final_states);
 
 	return result;
 }
@@ -177,6 +270,14 @@ void DeterministicFiniteAutomaton::PrintAutomation()
 
 bool DeterministicFiniteAutomaton::CheckWord(std::string word)
 {
+	int current_state = m_init_state;
+	for (char symbol : word) {
+		auto it = m_transitions.find({ current_state, symbol });
+		if (it == m_transitions.end()) {
+			return false;
+		}
+		current_state = it->second;
+	}
 
-	return false;
+	return m_final_states.find(current_state) != m_final_states.end();
 }

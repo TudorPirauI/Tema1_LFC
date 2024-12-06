@@ -160,16 +160,26 @@ int main()
     readRegex("Input.txt",regex);
     formatRegex(regex);
     std::cout << regex<<std::endl;
-    DeterministicFiniteAutomaton automat1;
 
-    if (automat1.VerifyAutomation() == true)
+    std::vector<char> polishForm = regexToPolishForm(regex);
+    NondeterministicFiniteAutomaton NFA=NFA.returnAFNfromPolishForm(polishForm);
+    NFA.PrintAutomation();
+
+    DeterministicFiniteAutomaton DFA = DFA.AFNtoAFD(NFA);
+    if (DFA.VerifyAutomation() == true)
     {
-        automat1.PrintAutomation();
+        DFA.PrintAutomation();
     }
     else
-        std::cout << std::endl<< "It is not valid!" << std::endl;
-    std::vector<char> polishForm = regexToPolishForm(regex);
-    NondeterministicFiniteAutomaton automat2=automat2.returnAFNfromPolishForm(polishForm);
-    automat2.PrintAutomation();
+        std::cout << std::endl << "It is not valid!" << std::endl;
+
+    std::cout << "Enter a word: ";
+    std::string word;
+    std::cin>>word;
+    if (DFA.CheckWord(word)) {
+        std::cout << "The word " << word << " is valid!" << std::endl;
+    }
+    else
+        std::cout << "The word " << word << " is NOT valid!" << std::endl;
 	return 0;
 }
