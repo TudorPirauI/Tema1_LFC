@@ -78,48 +78,48 @@ struct SetHash {
 	}
 };
 
-DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa regex)
+std::set<int> lambda_closure(nfa AFN, const std::set<int>& states) {
+	std::set<int> closure = states;
+	std::queue<int> state_queue;
+	for (int state : states) {
+		state_queue.push(state);
+	}
+
+	while (!state_queue.empty()) {
+		int current_state = state_queue.front();
+		state_queue.pop();
+		auto transitions = AFN.getTransitions();
+		auto it = transitions.find({ current_state, 'L' });
+		if (it != transitions.end()) {
+			for (int next_state : it->second) {
+				if (closure.find(next_state) == closure.end()) {
+					closure.insert(next_state);
+					state_queue.push(next_state);
+				}
+			}
+		}
+	}
+
+	return closure;
+};
+
+DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa AFN)
 {
 	DeterministicFiniteAutomaton result;
 
 	std::set<int> dfa_states;
 	std::unordered_map<std::pair<int, char>, int, PairHash> dfa_transitions;
 	std::set<int> dfa_final_states;
-	std::set<char> alphabet = regex.getAlphabet();
+	std::set<char> alphabet = AFN.getAlphabet();
 
 	alphabet.erase('L');
-
-	auto lambda_closure = [&](const std::set<int>& states) {
-		std::set<int> closure = states;
-		std::queue<int> state_queue;
-		for (int state : states) {
-			state_queue.push(state);
-		}
-
-		while (!state_queue.empty()) {
-			int current_state = state_queue.front();
-			state_queue.pop();
-			auto transitions = regex.getTransitions();
-			auto it = transitions.find({ current_state, 'L' });
-			if (it != transitions.end()) {
-				for (int next_state : it->second) {
-					if (closure.find(next_state) == closure.end()) {
-						closure.insert(next_state);
-						state_queue.push(next_state);
-					}
-				}
-			}
-		}
-
-		return closure;
-		};
 
 	std::queue<std::set<int>> state_queue;
 	std::unordered_map<std::set<int>, int, SetHash> state_mapping;
 	int state_counter = 0;
 
-	std::set<int> nfa_init_state = { regex.getInitState() };
-	std::set<int> dfa_init_state = lambda_closure(nfa_init_state);
+	std::set<int> nfa_init_state = { AFN.getInitState() };
+	std::set<int> dfa_init_state = lambda_closure(AFN, nfa_init_state);
 
 	state_mapping[dfa_init_state] = state_counter++;
 	state_queue.push(dfa_init_state);
@@ -135,7 +135,7 @@ DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa regex)
 			std::set<int> next_states;
 
 			for (int state : current_set) {
-				auto transitions = regex.getTransitions();
+				auto transitions = AFN.getTransitions();
 				auto it = transitions.find({ state, symbol });
 				if (it != transitions.end()) {
 					for (int next_state : it->second) {
@@ -144,7 +144,7 @@ DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa regex)
 				}
 			}
 
-			std::set<int> next_closure = lambda_closure(next_states);
+			std::set<int> next_closure = lambda_closure(AFN, next_states);
 
 			if (!next_closure.empty()) {
 				if (state_mapping.find(next_closure) == state_mapping.end()) {
@@ -159,7 +159,7 @@ DeterministicFiniteAutomaton DeterministicFiniteAutomaton::AFNtoAFD(nfa regex)
 
 	for (const auto& [nfa_set, dfa_state] : state_mapping) {
 		for (int nfa_state : nfa_set) {
-			if (nfa_state == regex.getFinalState()) {
+			if (nfa_state == AFN.getFinalState()) {
 				dfa_final_states.insert(dfa_state);
 				break;
 			}
