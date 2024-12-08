@@ -47,7 +47,7 @@ public:
 
 	DeterministicFiniteAutomaton AFNtoAFD(nfa regex);
 	bool VerifyAutomation();
-	void PrintAutomation();
+	void PrintAutomation(std::ostream& os);
 	bool CheckWord(std::string word);
 	~DeterministicFiniteAutomaton() = default;
 };

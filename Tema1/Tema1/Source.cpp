@@ -3,6 +3,7 @@
 #include<vector>
 #include<stack>
 #include<cstring>
+#include<format>
 
 #include "DeterministicFiniteAutomaton.h"
 #include "NondeterministicFiniteAutomaton.h"
@@ -158,28 +159,90 @@ int main()
 {
     std::string regex;
     readRegex("Input.txt",regex);
-    formatRegex(regex);
-    std::cout << regex<<std::endl;
 
-    std::vector<char> polishForm = regexToPolishForm(regex);
-    NondeterministicFiniteAutomaton NFA=NFA.returnAFNfromPolishForm(polishForm);
-    NFA.PrintAutomation();
-
-    DeterministicFiniteAutomaton DFA = DFA.AFNtoAFD(NFA);
-    if (DFA.VerifyAutomation() == true)
+    if (isValidRegex(regex) == false)
     {
-        DFA.PrintAutomation();
+        std::cout << "REGEX is NOT valid!\n";
     }
     else
-        std::cout << std::endl << "It is not valid!" << std::endl;
+    {
 
-    std::cout << "Enter a word: ";
-    std::string word;
-    std::cin>>word;
-    if (DFA.CheckWord(word)) {
-        std::cout << "The word " << word << " is valid!" << std::endl;
+        std::string formattedRegex = regex;
+        formatRegex(formattedRegex);
+        std::vector<char> polishForm = regexToPolishForm(formattedRegex);
+        NondeterministicFiniteAutomaton NFA = NFA.returnAFNfromPolishForm(polishForm);
+        DeterministicFiniteAutomaton DFA = DFA.AFNtoAFD(NFA);
+
+        bool exitState = false;
+
+        while (!exitState)
+        {
+            int state;
+
+            std::cout << "----------------------------------\n";
+            std::cout << "Choose next step:\n";
+            std::cout << "0.EXIT;\n";
+            std::cout << "1.Print REGEX;\n";
+            std::cout << "2.Print DFA;\n";
+            std::cout << "3.Print NFA;\n";
+            std::cout << "4.Check Word.\n";
+            std::cout << "----------------------------------\n";
+
+            std::cin >> state;
+
+            if (state == 0) // EXIT
+            {
+                exitState = true;
+            }
+            else if (state == 1) // Print REGEX
+            {
+                std::cout << std::format("Regex read from file: {}\n", regex);
+            }
+            else if (state == 2) // Print DFA
+            {
+                if (DFA.VerifyAutomation() == true)
+                {
+                    std::ofstream fout("OutputDFA.txt");
+                    DFA.PrintAutomation(std::cout);
+                    DFA.PrintAutomation(fout);
+                    fout.close();
+                }
+                else
+                    std::cout << std::endl << "DFA is NOT valid!" << std::endl;
+            }
+            else if (state == 3) // Print NFA
+            {
+                if (DFA.VerifyAutomation() == true)
+                {
+                    std::ofstream fout("OutputNFA.txt");
+                    NFA.PrintAutomation(std::cout);
+                    NFA.PrintAutomation(fout);
+                    fout.close();
+                }
+                else
+                    std::cout << std::endl << "DFA is NOT valid!" << std::endl;
+            }
+            else if (state == 4) // Check WORD
+            {
+                std::string word;
+                std::cout << "Enter word for validation: ";
+                std::cin >> word;
+
+                if (DFA.VerifyAutomation() == true)
+                {
+                    if (DFA.CheckWord(word) == true)
+                    {
+                        std::cout << std::format("{} is a valid word!\n", word);
+                    }
+                    else
+                    {
+                        std::cout << std::format("{} is NOT a valid word!\n", word);
+                    }
+                }
+                else
+                    std::cout << std::endl << "DFA is NOT valid!" << std::endl;
+            }
+        }
     }
-    else
-        std::cout << "The word " << word << " is NOT valid!" << std::endl;
 	return 0;
 }

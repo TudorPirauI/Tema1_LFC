@@ -124,30 +124,30 @@ nfa NondeterministicFiniteAutomaton::returnAFNfromPolishForm(std::vector<char> p
     return automatonStack.top();
 }
 
-void NondeterministicFiniteAutomaton::PrintAutomation()
+void NondeterministicFiniteAutomaton::PrintAutomation(std::ostream& os)
 {
-    std::cout << "\nStates:\n";
+    os << "\nStates:\n";
     for (int state : m_states)
-        std::cout << state <<", ";
+        os << state << ", ";
 
-    std::cout <<std::endl<< "\nAlphabet:\n";
+    os <<std::endl<< "\nAlphabet:\n";
     for (char symbol : m_alphabet)
-        std::cout<< symbol << std::endl;
+        os << symbol << ", ";
 
-    std::cout << "\nTransitions:\n";
+    os << "\n\nTransitions:\n";
     for (const auto& transition : m_transitions)
     {
         for (int destination : transition.second)
         {
-            std::cout << transition.first.first << " --" << transition.first.second << "--> " << destination << " ";
+            os << transition.first.first << " --" << transition.first.second << "--> " << destination << "; ";
         }
-        std::cout << std::endl;
+        os << std::endl;
     }
 
-    std::cout << "\nInitial state:\n" << m_init_state << std::endl;
+    os << "\nInitial state:\n" << m_init_state << std::endl;
 
-    std::cout << "\nFinal state:\n";
-        std::cout << m_final_state << std::endl;
+    os << "\nFinal state:\n";
+    os << m_final_state << std::endl;
 }
 
 nfa NondeterministicFiniteAutomaton::Concatenate(nfa b, nfa a)

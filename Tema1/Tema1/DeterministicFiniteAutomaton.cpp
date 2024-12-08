@@ -247,25 +247,25 @@ bool DeterministicFiniteAutomaton::VerifyAutomation()
 	return true;
 }
 
-void DeterministicFiniteAutomaton::PrintAutomation()
+void DeterministicFiniteAutomaton::PrintAutomation(std::ostream& os)
 {
-	std::cout << "\nStates:\n";
+	os << "\nStates:\n";
 	for (int state : m_states)
-		std::cout << state << std::endl;
+		os << state << ", ";
 
-	std::cout << "\nAlphabet:\n";
+	os << "\n\nAlphabet:\n";
 	for (char symbol : m_alphabet)
-		std::cout << symbol << std::endl;
+		os << symbol << ", ";
 
-	std::cout << "\nTransitions:\n";
+	os << "\n\nTransitions:\n";
 	for (const auto& transition : m_transitions)
-		std::cout << transition.first.first << " --" << transition.first.second << "--> " << transition.second << std::endl;
+		os << transition.first.first << " --" << transition.first.second << "--> " << transition.second << std::endl;
 
-	std::cout << "\nInitial state:\n" << m_init_state << std::endl;
+	os << "\nInitial state:\n" << m_init_state << std::endl;
 
-	std::cout << "\nFinal states:\n";
+	os << "\nFinal states:\n";
 	for (int final_state : m_final_states)
-		std::cout << final_state << std::endl;
+		os << final_state << std::endl;
 }
 
 bool DeterministicFiniteAutomaton::CheckWord(std::string word)

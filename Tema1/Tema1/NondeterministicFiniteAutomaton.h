@@ -40,7 +40,7 @@ public:
 	void addTransition(int initalState, char symbol, int finalState);
 	void copyTransitions(const nfa& a);
 	nfa returnAFNfromPolishForm(std::vector<char> polishForm);
-	void PrintAutomation();
+	void PrintAutomation(std::ostream& os);
 
 	nfa Concatenate(nfa b, nfa a);
 	nfa Alternate(nfa b, nfa a);
