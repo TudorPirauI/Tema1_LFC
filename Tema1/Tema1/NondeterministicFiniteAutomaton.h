@@ -25,6 +25,7 @@ private:
 public:
 	NondeterministicFiniteAutomaton() = default;
 	~NondeterministicFiniteAutomaton() = default;
+
 	std::set<int>& getStates();
 	std::set<char>& getAlphabet();
 	std::unordered_map<std::pair<int, char>, std::vector<int>, PairHash>& getTransitions();

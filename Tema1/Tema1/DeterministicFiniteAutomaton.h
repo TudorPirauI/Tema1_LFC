@@ -31,7 +31,8 @@ private:
 	std::set<int> m_final_states; //F
 
 public:
-	DeterministicFiniteAutomaton();
+	DeterministicFiniteAutomaton() = default;
+	~DeterministicFiniteAutomaton() = default;
 
 	void setStates(std::set<int> states);
 	void setAlphabet(std::set<char> alphabet);
@@ -49,6 +50,5 @@ public:
 	bool VerifyAutomation();
 	void PrintAutomation(std::ostream& os);
 	bool CheckWord(std::string word);
-	~DeterministicFiniteAutomaton() = default;
 };
 

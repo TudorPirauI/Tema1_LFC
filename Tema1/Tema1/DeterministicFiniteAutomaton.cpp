@@ -1,22 +1,5 @@
 #include "DeterministicFiniteAutomaton.h"
 
-DeterministicFiniteAutomaton::DeterministicFiniteAutomaton()
-{
-	for (int i = 0; i < 6; i++)
-	{
-		m_states.insert(i);
-	}
-	m_alphabet.insert('a');
-	m_alphabet.insert('b');
-	m_transitions.insert({ {0, 'a'}, 1 });
-	m_transitions.insert({ {1, 'a'}, 2 });
-	m_transitions.insert({ {2, 'b'}, 3 });
-	m_transitions.insert({ {3, 'a'}, 4 });
-	m_transitions.insert({ {4, 'b'}, 5 });
-	m_init_state = 0;
-	m_final_states.insert(5);
-}
-
 void DeterministicFiniteAutomaton::setStates(std::set<int> states)
 {
 	m_states = states;
